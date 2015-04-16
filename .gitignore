@@ -1,0 +1,5 @@
+*.pyc
+*.sqlite
+/working
+/utf_testing
+*.txt
