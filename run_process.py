@@ -153,7 +153,7 @@ people_recordset = session.query(models.Person).\
 
 with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
     # write header row
-    outfile.write(u'input_record|sim_group_id|first_name|last_name|email|domain|normalized\n')
+    outfile.write(u'input_record|sim_group_id|first_name|last_name|email|domain|full_name\n')
 
     for person in people_recordset:
         kwargs = {
@@ -163,9 +163,9 @@ with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
           'last_name': person.last_name, 
           'email': person.email,
           'domain': person.domain,
-          'normalized': '{}, {}'.format(person.last_name, person.first_name).title()
+          'full_name': '{}, {}'.format(person.last_name, person.first_name).title()
         }
-        line = u'{input_record}|{sim_group_id}|{first_name}|{last_name}|{email}|{domain}|{normalized}\n'.format(**kwargs)
+        line = u'{input_record}|{sim_group_id}|{first_name}|{last_name}|{email}|{domain}|{full_name}\n'.format(**kwargs)
         outfile.write(line)
 
 
