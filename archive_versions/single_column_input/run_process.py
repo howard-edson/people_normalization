@@ -20,18 +20,18 @@ import os, sys
 # check for correct usage and print error message if incorrect.
 if len(sys.argv) != 2:
     print """Error. Pass the name of the input file as an argument, e.g. 
-#> python run_process.py input_file.csv <enter>"""
+#> python run_proces.py input_file.txt <enter>"""
     sys.exit()
 
 
 INPUT_FILE = sys.argv[1]                        # full name with extension
-HEADER_ROW = True                               # first row of input file contains field names?
-ENCODING = 'utf-8'                              # or 'utf-8' or 'latin-1'
-INPUT_FILE_NAME = INPUT_FILE.split('.')[0]      # first part of filename only
+HEADER_ROW = True   # first row of input file contains field names?
+ENCODING = 'utf-16' # or 'utf-8' or 'latin-1'
+INPUT_FILE_NAME = INPUT_FILE.split('.')[0]      # first part of name only
 DB_NAME = '{}.sqlite'.format(INPUT_FILE_NAME)
 OUTPUT_FILE_NAME = '{}_output.txt'.format(INPUT_FILE_NAME)
-SCORE_THRESHOLD = 50                            # scores above this level are possible matches
-MEASURE_EXEC_TIME = True                        # for measuring and printing execution time
+SCORE_THRESHOLD = 50      # scores above this level are possible matches
+MEASURE_EXEC_TIME = True  # for measuring performance
 
 print 'INPUT_FILE: {}'.format(INPUT_FILE)
 print 'DB_NAME: {}'.format(DB_NAME)
@@ -63,20 +63,17 @@ print 'Database {} created.'.format(DB_NAME)
 # ** Step 1 **
 # Read people records from the input file, instantiate Person objects,
 # and save them to the database.
-# Note: updated to work with two-column input file on 4/21/15
 with codecs.open(INPUT_FILE, mode="r", encoding=ENCODING) as f:
     count_input_records = 0
     records_processed = dict()  # prevents adding the same record twice if duplicated in INPUT_FILE
     if HEADER_ROW:
         # skip first line in input file
         next(f)
-    for row in f:
-        row = row.split('\t')
-        rt_id = row[0]  # the ringtail ID for the record
-        record = row[1].strip()
+    for record in f:
+        record = record.strip()
         if record and not record in records_processed:
             records_processed[record] = 1
-            p = models.Person(rt_id, record)
+            p = models.Person(record)
             session.add(p)
             count_input_records += 1
 session.commit()
@@ -156,11 +153,10 @@ people_recordset = session.query(models.Person).\
 
 with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
     # write header row
-    outfile.write(u'person_id|input_record|sim_group_id|first_name|last_name|email|domain|full_name\n')
+    outfile.write(u'input_record|sim_group_id|first_name|last_name|email|domain|full_name\n')
 
     for person in people_recordset:
         kwargs = {
-          'rt_person_id': person.ringtail_person_id,
           'input_record': person.input_record, 
           'sim_group_id': person.sim_group_id, 
           'first_name': person.first_name, 
@@ -169,7 +165,7 @@ with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
           'domain': person.domain,
           'full_name': '{}, {}'.format(person.last_name, person.first_name).title()
         }
-        line = u'{rt_person_id}|{input_record}|{sim_group_id}|{first_name}|{last_name}|{email}|{domain}|{full_name}\n'.format(**kwargs)
+        line = u'{input_record}|{sim_group_id}|{first_name}|{last_name}|{email}|{domain}|{full_name}\n'.format(**kwargs)
         outfile.write(line)
 
 

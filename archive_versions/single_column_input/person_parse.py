@@ -15,7 +15,7 @@ import string
 def get_firstname_lastname(record):
     "Returns (firstname, lastname) from a given person record"
     firstname, lastname = "", ""
-    ## try each pattern in order to parse first and last names
+    # try each pattern in order to parse first and last names
     for p in patterns.name_patterns:
         if p == patterns.pattern_names_5:
             match_object = patterns.pattern_names_5.search(record)
@@ -28,7 +28,7 @@ def get_firstname_lastname(record):
                 lastname = match_object.group('last').strip().lower()
         if match_object:
             break  # match found; don't try any more patterns
-    ## print 'pattern %s' % (patterns.name_patterns.index(p)+1)
+    #print 'pattern %s' % (patterns.name_patterns.index(p)+1)
     return (firstname, lastname)
 
 

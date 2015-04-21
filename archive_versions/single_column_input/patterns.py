@@ -109,15 +109,8 @@ pattern_names_7 = re.compile(
     """,
     re.UNICODE | re.VERBOSE)
 
-name_patterns = [
-    pattern_names_1, 
-    pattern_names_2, 
-    pattern_names_3, 
-    pattern_names_4, 
-    pattern_names_4a, 
-    pattern_names_5, 
-    pattern_names_6, 
-    pattern_names_7
+name_patterns = [pattern_names_1, pattern_names_2, pattern_names_3, 
+    pattern_names_4, pattern_names_4a, pattern_names_5, pattern_names_6, pattern_names_7
 ]
 
 pattern_email_name = re.compile(
