@@ -177,5 +177,10 @@ with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
 session.close()
 if MEASURE_EXEC_TIME:
     end_time = time.time()
-    exec_time = round(end_time - start_time, 1)
-    print '\nProcessed {0} records in {1} seconds.'.format(count_input_records, exec_time)
+    exec_time = end_time - start_time
+    if exec_time < 60:
+        print '\nProcessed {0} records in {1} seconds.'.format(count_input_records, round(exec_time, 2))
+    elif exec_time < 3600:
+        print '\nProcessed {0} records in {1} minutes.'.format(count_input_records, round(exec_time/60, 2))
+    else:
+        print '\nProcessed {0} records in {1} hours.'.format(count_input_records, round(exec_time/3600, 2))
