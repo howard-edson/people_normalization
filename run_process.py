@@ -26,12 +26,13 @@ if len(sys.argv) != 2:
 
 INPUT_FILE = sys.argv[1]                        # full name with extension
 HEADER_ROW = True                               # first row of input file contains field names?
-ENCODING = 'utf-8'                              # or 'utf-8' or 'latin-1'
+ENCODING = 'utf-16'                             # 'utf-8', 'latin-1', or 'utf-16' when saved Excel as unicode.txt
 INPUT_FILE_NAME = INPUT_FILE.split('.')[0]      # first part of filename only
 DB_NAME = '{}.sqlite'.format(INPUT_FILE_NAME)
 OUTPUT_FILE_NAME = '{}_output.txt'.format(INPUT_FILE_NAME)
 SCORE_THRESHOLD = 50                            # scores above this level are possible matches
 MEASURE_EXEC_TIME = True                        # for measuring and printing execution time
+DELIMETER = '\t'
 
 print 'INPUT_FILE: {}'.format(INPUT_FILE)
 print 'DB_NAME: {}'.format(DB_NAME)
@@ -156,10 +157,11 @@ people_recordset = session.query(models.Person).\
 
 with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
     # write header row
-    outfile.write(u'person_id|input_record|sim_group_id|first_name|last_name|email|domain|full_name\n')
+    outfile.write(u'person_id{D}input_record{D}sim_group_id{D}first_name{D}last_name{D}email{D}domain{D}full_name\n'.format(D=DELIMETER))
 
     for person in people_recordset:
         kwargs = {
+          'D': DELIMETER,
           'rt_person_id': person.ringtail_person_id,
           'input_record': person.input_record, 
           'sim_group_id': person.sim_group_id, 
@@ -169,9 +171,8 @@ with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
           'domain': person.domain,
           'full_name': '{}, {}'.format(person.last_name, person.first_name).title()
         }
-        line = u'{rt_person_id}|{input_record}|{sim_group_id}|{first_name}|{last_name}|{email}|{domain}|{full_name}\n'.format(**kwargs)
+        line = u'{rt_person_id}{D}{input_record}{D}{sim_group_id}{D}{first_name}{D}{last_name}{D}{email}{D}{domain}{D}{full_name}\n'.format(**kwargs)
         outfile.write(line)
-
 
 session.close()
 if MEASURE_EXEC_TIME:
