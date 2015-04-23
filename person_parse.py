@@ -13,23 +13,21 @@ import patterns     # my module containing all the regex patterns
 import string
 
 def get_firstname_lastname(record):
-    "Returns (firstname, lastname) from a given person record"
+    "Returns (firstname, lastname,pattern_number) for a given person record"
     firstname, lastname = "", ""
-    ## try each pattern in order to parse first and last names
+    pattern_number = -1  # the value indicating no match found!
     for p in patterns.name_patterns:
-        if p == patterns.pattern_names_5:
-            match_object = patterns.pattern_names_5.search(record)
-            if match_object:
-                lastname = match_object.group('last').strip()
+        if p == patterns.pattern_names_8:
+            # Special case where we search instead of match
+            match_object = p.search(record)
         else:
             match_object = p.match(record)
-            if match_object:
-                firstname = match_object.group('first').strip().lower()
-                lastname = match_object.group('last').strip().lower()
         if match_object:
+            firstname = match_object.group('first').strip().lower()
+            lastname = match_object.group('last').strip().lower()
+            pattern_number = patterns.name_patterns.index(p)+1
             break  # match found; don't try any more patterns
-    ## print 'pattern %s' % (patterns.name_patterns.index(p)+1)
-    return (firstname, lastname)
+    return (firstname, lastname, pattern_number)
 
 
 def get_email_name_domain(record):
@@ -48,18 +46,6 @@ def get_email_name_domain(record):
         email = email_match_object.group('email').strip(string.punctuation).lower()
 
     return (email, name, domain)
-
-
-def get_firstname_from_email(email):
-    """
-    Returns a firstname from an email address; used as a fallback when it couldn't 
-    be parsed from the whole person record.
-    """
-    firstname = ""
-    name_match_object = patterns.pattern_fname_from_email.search(email)
-    if name_match_object:
-        firstname = name_match_object.group('first')
-    return firstname
 
 
 def get_n_grams(s, n=3):

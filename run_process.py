@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # module: run_process.py
-
 """
 Reads people records from an input file, identifies and groups records 
 that likely represent the same real-world pesron.
 
 Run from command line, passing name of input file as an argument, e.g.
 #> python run_process.py input_file.txt <enter>
-
 """
+
 import codecs
 from person_parse import get_sim_score, same_group, same_names
 import sqlalchemy
@@ -47,8 +46,10 @@ if MEASURE_EXEC_TIME:
 try: 
     os.remove(DB_NAME)
     print 'Database {} dropped.'.format(DB_NAME)
-except OSError:
-    pass
+except Exception, e:
+    print '\n{}'.format(e)
+    sys.exit()
+
 engine = sqlalchemy.create_engine('sqlite:///{}'.format(DB_NAME))
 models.Base.metadata.create_all(engine)
 
@@ -169,7 +170,7 @@ with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
           'last_name': person.last_name, 
           'email': person.email,
           'domain': person.domain,
-          'full_name': '{}, {}'.format(person.last_name, person.first_name).title()
+          'full_name': u'{}, {}'.format(person.last_name, person.first_name).title()
         }
         line = u'{rt_person_id}{D}{input_record}{D}{sim_group_id}{D}{first_name}{D}{last_name}{D}{email}{D}{domain}{D}{full_name}\n'.format(**kwargs)
         outfile.write(line)

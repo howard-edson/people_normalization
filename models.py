@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # module: models.py
-
 """
 Use SQLAlchemy to define the data model so it can be implemented as a 
 SQL database.
 """
+
 from sqlalchemy import Column, Integer, String, Boolean, Sequence, \
                        create_engine, ForeignKey, UniqueConstraint, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker
-from person_parse import get_firstname_lastname, get_email_name_domain, \
-                         get_n_grams, get_firstname_from_email
+from person_parse import get_firstname_lastname, get_email_name_domain, get_n_grams
 
 Base = declarative_base()
 
@@ -31,7 +30,8 @@ class Person(Base):
     last_name = Column(String(100))
     email = Column(String(100))
     domain = Column(String(100))
-    n_grams = Column(String(100)) # comma-delimited list of n-grams from last_name and email_name
+    n_grams = Column(String(100))      # comma-delimited list of n-grams from last_name and email_name
+    name_pattern = Column(Integer)     # the name pattern that was used to parse first and last name
     sim_group_id = Column(Integer, ForeignKey('sim_group.id'), nullable=True)
     similar_people = relationship("Person",
         secondary=sims,
@@ -41,13 +41,11 @@ class Person(Base):
     def __init__(self, rt_id, input_record):
         self.ringtail_person_id = rt_id
         self.input_record = input_record
-        self.first_name, self.last_name = get_firstname_lastname(self.input_record)
+        self.first_name, self.last_name, self.name_pattern = get_firstname_lastname(self.input_record)
         self.email, self.email_name, self.domain = get_email_name_domain(self.input_record)
         self.n_grams = (','.join(
             get_n_grams(self.last_name) | 
             get_n_grams(self.email_name)))
-        if (not self.first_name) and self.email:  # sometimes you can get first name from email address
-            self.first_name = get_firstname_from_email(self.email)
 
     def __repr__(self):
         return 'person object: {}'.format(self.input_record)

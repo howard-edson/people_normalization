@@ -1,24 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # module: get_sample_data.py
+"""
+Pull a random sample of people records from an input file.
+"""
 
 import sys
 import codecs
 import random
-
-INPUT_FILE = sys.argv[1]                        # full name with extension
-HEADER_ROW = True                               # first row of input file contains field names?
-ENCODING = 'utf-16'                             # 'utf-8', 'latin-1', or 'utf-16' when saved Excel as unicode.txt
-INPUT_FILE_NAME = INPUT_FILE.split('.')[0]      # first part of filename only
-OUTPUT_FILE_NAME = '{}_test.txt'.format(INPUT_FILE_NAME)
-SAMPLE_SIZE = 200
-DELIMETER = '\t'
 
 # check for correct usage and print error message if incorrect.
 if len(sys.argv) != 2:
     print """Error. Pass the name of the input file as an argument, e.g. 
 #> python run_process.py input_file.csv <enter>"""
     sys.exit()
+
+INPUT_FILE = sys.argv[1]                        # full name with extension
+SAMPLE_SIZE = 1000
+HEADER_ROW = True                               # first row of input file contains field names?
+ENCODING = 'utf-16'                             # 'utf-8', 'latin-1', or 'utf-16' when saved Excel as unicode.txt
+INPUT_FILE_NAME = INPUT_FILE.split('.')[0]      # first part of filename only
+OUTPUT_FILE_NAME = '{}_test.txt'.format(INPUT_FILE_NAME)
+DELIMETER = '\t'
+
 
 # 1. Read the file into a list of tuples: (person_id, person)
 input_record_list = []
