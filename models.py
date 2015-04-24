@@ -24,7 +24,7 @@ class Person(Base):
     "A person object includes attributes parsed from an input record."
     __tablename__ = 'person'
     id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
-    ringtail_person_id = Column(Integer, unique=True)
+    source_person_id = Column(Integer, unique=True)
     input_record = Column(String(250), nullable=False, unique=True)
     first_name = Column(String(100))
     last_name = Column(String(100))
@@ -38,8 +38,8 @@ class Person(Base):
         primaryjoin=id==sims.c.left_person_id,
         secondaryjoin=id==sims.c.right_person_id)
     
-    def __init__(self, rt_id, input_record):
-        self.ringtail_person_id = rt_id
+    def __init__(self, source_id, input_record):
+        self.source_person_id = source_id
         self.input_record = input_record
         self.first_name, self.last_name, self.name_pattern = get_firstname_lastname(self.input_record)
         self.email, self.email_name, self.domain = get_email_name_domain(self.input_record)

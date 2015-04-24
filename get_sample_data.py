@@ -33,7 +33,7 @@ with codecs.open(INPUT_FILE, mode="r", encoding=ENCODING) as f:
         next(f)    # skip first line in input file
     for row in f:
         row = row.split(DELIMETER)
-        person_id = row[0]  # the ringtail ID for the record
+        person_id = row[0]  # the source system ID for the record
         person = row[1].strip()
         if person and not person in records_processed:
             records_processed[person] = 1

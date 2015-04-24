@@ -1,7 +1,7 @@
 # Overview
 Given a list of people records consisting of a person's name and email address,
 where each record can be in any of several common formats, this software
-will find and parse the person's first and last names, and email address and domain
+will find and parse the person's first and last names, and email address and domain,
 into separate columns in an output report. 
 
 Additionally, it will perform [record linkage](http://en.wikipedia.org/wiki/Record_linkage), 
@@ -19,7 +19,7 @@ and an output file called [filename]_output.txt, both in the same directory as t
 
 ## The input file
 The input file should be a two-column, tab-delimited ('\t') file with a header row. We use a tab
-because from Excel you can save as type "unicode .txt". Unicode characters will work fine.
+because from Excel you can save as type "unicode .txt" (Unicode characters work just fine!).
 * Column 1 is person ID - the unique identifier for each person record from the source system
 * Column 2 is the raw person record itself.
 

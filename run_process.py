@@ -74,11 +74,11 @@ with codecs.open(INPUT_FILE, mode="r", encoding=ENCODING) as f:
         next(f)
     for row in f:
         row = row.split('\t')
-        rt_id = row[0]  # the ringtail ID for the record
+        source_id = row[0]  # the source ID for the record
         record = row[1].strip()
         if record and not record in records_processed:
             records_processed[record] = 1
-            p = models.Person(rt_id, record)
+            p = models.Person(source_id, record)
             session.add(p)
             count_input_records += 1
 session.commit()
@@ -163,7 +163,7 @@ with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
     for person in people_recordset:
         kwargs = {
           'D': DELIMETER,
-          'rt_person_id': person.ringtail_person_id,
+          'source_person_id': person.source_person_id,
           'input_record': person.input_record, 
           'sim_group_id': person.sim_group_id, 
           'first_name': person.first_name, 
@@ -172,7 +172,7 @@ with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
           'domain': person.domain,
           'full_name': u'{}, {}'.format(person.last_name, person.first_name).title()
         }
-        line = u'{rt_person_id}{D}{input_record}{D}{sim_group_id}{D}{first_name}{D}{last_name}{D}{email}{D}{domain}{D}{full_name}\n'.format(**kwargs)
+        line = u'{source_person_id}{D}{input_record}{D}{sim_group_id}{D}{first_name}{D}{last_name}{D}{email}{D}{domain}{D}{full_name}\n'.format(**kwargs)
         outfile.write(line)
 
 session.close()
