@@ -5,15 +5,8 @@
 """
  Each of the regex patterns used in parsing attributes from a person record:
  firstname, lastname, email address, email name, email domain.
-
- Also creates regex patterns for whitespace and punctuation.
 """
 import re
-import string
-
-whitespace = re.compile('[%s]' % re.escape(string.whitespace))
-punctuation = re.compile('[%s]' % re.escape(string.punctuation))
-
 
 pattern_names_1 = re.compile(
     # looks for lastname, firstname [other stuff] 
@@ -56,19 +49,17 @@ pattern_names_3 = re.compile(
     re.UNICODE | re.VERBOSE)
 
 pattern_names_4 = re.compile(
-    # looks for firstname.lastname@domain.tld
-    # where separator must exist and can be dot or underscore
-    # only works when email is at the beginnng of the line (when matching)
+    # looks for first.i.last@domain.tld
     r"""
-    [\"\']?                   # optional leading single or double quote
-    (?P<first>[\w\-]+)     # first name (can include hyphen but not space)
-    [._]                      # dot or underscore character
-    (?P<last>[\w\-]+)      # last name (can include hyphen but not space)
-    [1-4]?                    # optional trailing digit
-    @                         # @ symbol
-    .*                        # any other crap
+    (?P<first>[\w\-]+)         # first name
+    [._]                       # dot or underscore
+    (?P<middle>\w+[._])        # middle, dot or underscore
+    (?P<last>[\w\-]+)          # last name
+    @                          # @ symbol
+    .*                         # any other crap
     """,
     re.UNICODE | re.VERBOSE)
+
 
 pattern_names_5 = re.compile(
     # looks for firstname lastname [other stuff]
@@ -95,14 +86,17 @@ pattern_names_6 = re.compile(
 
 
 pattern_names_7 = re.compile(
-    # looks for first.i.last@domain.tld
+    # looks for firstname.lastname@domain.tld
+    # where separator must exist and can be dot or underscore
+    # only works when email is at the beginnng of the line (when matching)
     r"""
-    (?P<first>[\w\-]+)         # first name
-    \.                         # dot
-    (?P<middle>\w+\.)          # middle, dot
-    (?P<last>[\w\-]+)          # last name
-    @                          # @ symbol
-    .*                         # any other crap
+    [\"\']?                   # optional leading single or double quote
+    (?P<first>[\w\-]+)        # first name (can include hyphen but not space)
+    [._]                      # dot or underscore character
+    (?P<last>[\w\-\']+)       # last name (can include hyphen or tick but not space)
+    [1-4]?                    # optional trailing digit
+    @                         # @ symbol
+    .*                        # any other crap
     """,
     re.UNICODE | re.VERBOSE)
 

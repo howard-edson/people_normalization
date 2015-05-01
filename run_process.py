@@ -22,7 +22,6 @@ if len(sys.argv) != 2:
 #> python run_process.py input_file.csv <enter>"""
     sys.exit()
 
-
 INPUT_FILE = sys.argv[1]                        # full name with extension
 HEADER_ROW = True                               # first row of input file contains field names?
 ENCODING = 'utf-16'                             # 'utf-8', 'latin-1', or 'utf-16' when saved Excel as unicode.txt
@@ -46,9 +45,8 @@ if MEASURE_EXEC_TIME:
 try: 
     os.remove(DB_NAME)
     print 'Database {} dropped.'.format(DB_NAME)
-except Exception, e:
-    print '\n{}'.format(e)
-    sys.exit()
+except IOError:
+    print 'No database file found.'
 
 engine = sqlalchemy.create_engine('sqlite:///{}'.format(DB_NAME))
 models.Base.metadata.create_all(engine)
@@ -170,7 +168,7 @@ with codecs.open(OUTPUT_FILE_NAME, mode="w", encoding=ENCODING) as outfile:
           'last_name': person.last_name, 
           'email': person.email,
           'domain': person.domain,
-          'full_name': u'{}, {}'.format(person.last_name, person.first_name).title()
+          'full_name': u'{}, {}'.format(person.last_name, person.first_name).title() if (person.first_name and person.last_name) else u''
         }
         line = u'{source_person_id}{D}{input_record}{D}{sim_group_id}{D}{first_name}{D}{last_name}{D}{email}{D}{domain}{D}{full_name}\n'.format(**kwargs)
         outfile.write(line)

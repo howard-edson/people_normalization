@@ -12,7 +12,7 @@ import random
 # check for correct usage and print error message if incorrect.
 if len(sys.argv) != 2:
     print """Error. Pass the name of the input file as an argument, e.g. 
-#> python run_process.py input_file.csv <enter>"""
+#> python run_process.py input_file.txt <enter>"""
     sys.exit()
 
 INPUT_FILE = sys.argv[1]                        # full name with extension

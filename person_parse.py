@@ -12,6 +12,10 @@ import codecs       # to handle unicode characters in input file
 import patterns     # my module containing all the regex patterns
 import string
 
+whitespace = re.compile('[%s]' % re.escape(string.whitespace))
+punctuation = re.compile('[%s]' % re.escape(string.punctuation))
+
+
 def get_firstname_lastname(record):
     "Returns (firstname, lastname,pattern_number) for a given person record"
     firstname, lastname = "", ""
@@ -54,15 +58,14 @@ def get_n_grams(s, n=3):
     an input string.
     """
     n_grams_list = []
-    s = re.sub(patterns.punctuation, "", s)     # remove punctuation
-    s = re.sub(patterns.whitespace, "", s)      # remove whitespace
+    s = re.sub(punctuation, "", s)     # remove punctuation
+    s = re.sub(whitespace, "", s)      # remove whitespace
     s = s.lower()                               # lowercase
     pos = 0
     while pos < (len(s) - (n-1)):
         n_grams_list.append(s[pos:pos + n])
         pos = pos + 1
     n_grams_set = set(n_grams_list)             # convert to set to eliminate dupes
-    #n_grams_string = ','.join(n_grams_set)
     return n_grams_set
 
 
@@ -87,23 +90,25 @@ def get_sim_score(a, b):
     "Returns a similarity score 0-100 for two person objects and b."
     score = 0
 
-    # Emails are identical; perfect match!
     if a.email and a.email == b.email:
+        # identical emails --> perfect match
         score = 100
-    # Identical first AND last names; likely match! 
-    elif (a.last_name and a.last_name == b.last_name) and \
-         (a.first_name and a.first_name == b.first_name):
+    elif (not a.last_name) or (not b.last_name):
+        # either last_name is blank --> no basis for a score
+        score = 0
+    elif a.last_name != b.last_name:
+        # different (non-blank) last names --> not a match
+        score = 0
+    elif (a.last_name == b.last_name) and (a.first_name != b.first_name):
+        # Identical lastnames but different first names --> unlikely match
+        # Avoid using n_grams in this case to avoid false positives
+        score = 10
+    elif (a.last_name == b.last_name) and (a.first_name == b.first_name):
+        # Identical (non-blank) first AND last names --> a likely match
         score = 80
-    # Identical lastnames but different first names; NOT a likely match!
-    # Avoid using n_grams because you may well get a false positive!
-    elif (a.last_name and a.last_name == b.last_name) and \
-         (a.first_name != b.first_name) and \
-         (len(a.first_name) > 2 or len(b.first_name) > 2) and \
-         not (a.first_name in b.first_name or b.first_name in a.first_name):
-        score = 20
-    # Fall back on the jaccard index of the n-grams
-    # (n_grams are stored in the db as strings, need to be converted to sets)
     else:
+        # All other cases, fall back on the jaccard index of the n-grams
+        # (n_grams are stored in the db as strings, need to be converted to sets)
         score = int(100*(get_jaccard_index(set(a.n_grams.split(',')), set(b.n_grams.split(',')))))
     return score
 
